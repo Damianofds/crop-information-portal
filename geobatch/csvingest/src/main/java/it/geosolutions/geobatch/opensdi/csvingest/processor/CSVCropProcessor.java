@@ -21,16 +21,22 @@ package it.geosolutions.geobatch.opensdi.csvingest.processor;
 
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVPropertyType;
 import it.geosolutions.opensdi.model.CropData;
+import it.geosolutions.opensdi.model.CropDescriptor;
 import it.geosolutions.opensdi.model.UnitOfMeasure;
+import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
+import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
 import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author ETj (etj at geo-solutions.it)
@@ -41,7 +47,9 @@ import org.slf4j.LoggerFactory;
  * for each crop.
  */
 public class CSVCropProcessor extends GenericCSVProcessor<CropData, Long> {
-	
+
+    private CropDescriptorDAO cropDescriptorDAO;
+    
 	private final static Logger LOGGER = LoggerFactory
 	        .getLogger(CSVCropProcessor.class);
 
@@ -94,7 +102,7 @@ public List<String> getHeaders() {
 
 @Override
 public GenericNRLDAO<CropData, Long> getDao() {
-    return cropDataDAO;
+    return dao;
 }
 
 @Override
@@ -126,13 +134,14 @@ public CropData merge(CropData old, Object[] properties) {
 }
 
 public void save(CropData entity) {
-    cropDataDAO.merge(entity);
+    dao.merge(entity);
 }
 
 public void persist(CropData entity) {
-    cropDataDAO.persist(entity);
+    dao.persist(entity);
 }
-@Override protected void preProcess(CropData entity){
+@Override 
+protected void preProcess(CropData entity){
 	/**
 	 * Convert using default unit of measure
 	 */
@@ -162,5 +171,21 @@ public void persist(CropData entity) {
 	}
 }
 
+protected CropDescriptor getCropDescriptor(String id){
+    return cropDescriptorDAO.find(id);
+}
+
+public void setCropDataDAO(CropDataDAO cropDataDAO) {
+    this.dao = cropDataDAO;
+}
+
+protected Map<String, CropDescriptor> getCropDescriptors() {
+    List<CropDescriptor> descList = cropDescriptorDAO.findAll();
+    Map<String, CropDescriptor> ret = new HashMap<String, CropDescriptor>();
+    for (CropDescriptor cropDescriptor : descList) {
+        ret.put(cropDescriptor.getId(), cropDescriptor);
+    }
+    return ret;
+}
 
 }

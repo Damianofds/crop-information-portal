@@ -85,7 +85,7 @@ public List<String> getHeaders() {
 
 @Override
 public GenericNRLDAO<AgroMet, Long> getDao() {
-    return agrometDAO;
+    return dao;
 }
 
 @Override
@@ -183,11 +183,11 @@ static enum Month4 {
 }
 
 public void save(AgroMet entity) {
-    agrometDAO.merge(entity);
+    dao.merge(entity);
 }
 
 public void persist(AgroMet entity) {
-    agrometDAO.persist(entity);
+    dao.persist(entity);
 }
 
 

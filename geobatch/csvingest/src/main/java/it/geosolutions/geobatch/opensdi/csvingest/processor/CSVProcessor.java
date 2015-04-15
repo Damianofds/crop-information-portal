@@ -25,6 +25,7 @@ import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
 import it.geosolutions.opensdi.persistence.dao.CropStatusDAO;
+import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 import it.geosolutions.opensdi.service.UnitOfMeasureService;
 
 import java.util.HashMap;
@@ -44,10 +45,7 @@ public abstract class CSVProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CSVProcessor.class);
 
-    protected CropDataDAO cropDataDAO;
-    private CropDescriptorDAO cropDescriptorDAO;
-    protected AgrometDAO agrometDAO;
-    protected CropStatusDAO cropStatusDAO;
+    protected GenericNRLDAO dao;
     protected UnitOfMeasureService unitOfMeasureService;
 
 	public abstract List<String> getHeaders();
@@ -80,46 +78,18 @@ public abstract class CSVProcessor {
     public abstract int getFailCount();
     public abstract int getRemoveCount();
     public abstract int getUpdateCount();
+    
 
-    protected Map<String, CropDescriptor> getCropDescriptors() {
-        List<CropDescriptor> descList = cropDescriptorDAO.findAll();
-        Map<String, CropDescriptor> ret = new HashMap<String, CropDescriptor>();
-        for (CropDescriptor cropDescriptor : descList) {
-            ret.put(cropDescriptor.getId(), cropDescriptor);
-        }
-        return ret;
+    public void setDao(GenericNRLDAO dao) {
+        this.dao = dao;
     }
     
-    protected CropDescriptor getCropDescriptor(String id){
-    	return cropDescriptorDAO.find(id);
+    public String getDAOClassName() {
+        return this.dao.getClass().getName();
     }
 
-    public void setCropDataDAO(CropDataDAO cropDataDAO) {
-        this.cropDataDAO = cropDataDAO;
+    public void setUnitOfMeasureService(UnitOfMeasureService unitOfMeasureService) {
+        this.unitOfMeasureService = unitOfMeasureService;
+
     }
-
-    public void setCropDescriptorDAO(CropDescriptorDAO cropDescriptorDAO) {
-        this.cropDescriptorDAO = cropDescriptorDAO;
-    }
-
-    public void setAgrometDAO(AgrometDAO agrometDAO) {
-        this.agrometDAO = agrometDAO;
-    }
-
-    public CropStatusDAO getCropStatusDAO() {
-		return cropStatusDAO;
-	}
-
-	public void setCropStatusDAO(CropStatusDAO cropStatusDAO) {
-		this.cropStatusDAO = cropStatusDAO;
-	}
-
-	public void setUnitOfMeasureService(
-			UnitOfMeasureService unitOfMeasureService) {
-		this.unitOfMeasureService = unitOfMeasureService;
-		
-	}
-	
-	
-
 }

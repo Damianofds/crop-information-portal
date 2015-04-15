@@ -87,7 +87,7 @@ public List<Integer> getPkProperties() {
 
 @Override
 public GenericNRLDAO<CropStatus, Long> getDao() {
-    return cropStatusDAO;
+    return dao;
 }
 
 @Override
@@ -126,11 +126,11 @@ public CropStatus merge(CropStatus old, Object[] properties) {
 }
 
 public void save(CropStatus entity) {
-    cropStatusDAO.merge(entity);
+    dao.merge(entity);
 }
 
 public void persist(CropStatus entity) {
-    cropStatusDAO.persist(entity);
+    dao.persist(entity);
 }
 
 

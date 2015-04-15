@@ -26,9 +26,6 @@ import it.geosolutions.geobatch.annotations.Action;
 import it.geosolutions.geobatch.annotations.CheckConfiguration;
 import it.geosolutions.geobatch.flow.event.action.ActionException;
 import it.geosolutions.geobatch.flow.event.action.BaseAction;
-import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVAgrometProcessor;
-import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVCropProcessor;
-import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVCropStatusProcessor;
 import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProcessException;
 import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProcessor;
 import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
@@ -73,9 +70,10 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
     private CropStatusDAO cropStatusDao;
     
     @Autowired
-	private UnitOfMeasureService unitOfMeasureService;
+    private UnitOfMeasureService unitOfMeasureService;
 
-	private List<CSVProcessor> processors;
+    @Autowired
+    private List<CSVProcessor> processors;
 	
 	
     
@@ -202,21 +200,13 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        processors = new ArrayList<CSVProcessor>();
-
-        //TODO: Inject with spring
-        addProcessor(new CSVCropProcessor());
-        addProcessor(new CSVAgrometProcessor());
-        addProcessor(new CSVCropStatusProcessor());
-    }
-
-    private void addProcessor(CSVProcessor proc) {
-        proc.setCropDataDAO(cropDataDao);
-        proc.setCropDescriptorDAO(cropDescriptorDao);
-        proc.setAgrometDAO(agrometDao);
-        proc.setCropStatusDAO(cropStatusDao);
-        proc.setUnitOfMeasureService(unitOfMeasureService);
-        processors.add(proc);
+        if(processors== null || processors.isEmpty()){
+            throw new IllegalStateException("No CSV Processors have been found... at least one processor is needed in order to use this action...");
+        }
+        LOGGER.info("List of CSV processor found in the application Context:");
+        for(CSVProcessor processor : processors){
+            LOGGER.info("--> Processor: '" + processor.getClass().toString() + "' DAO: '" + processor.getDAOClassName() + "'");
+        }
     }
 
     public void setCropDescriptorDao(CropDescriptorDAO cropDescriptorDAO) {
