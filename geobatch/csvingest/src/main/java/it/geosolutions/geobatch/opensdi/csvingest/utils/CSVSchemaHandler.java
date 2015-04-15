@@ -33,7 +33,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.collections.ListUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -48,27 +49,33 @@ import org.springframework.util.StringUtils;
  */
 public class CSVSchemaHandler {
 
-    private static Logger LOGGER = Logger.getLogger(CSVSchemaHandler.class);
+    protected final static Logger LOGGER = LoggerFactory.getLogger(CSVSchemaHandler.class);
     
     private final static String TYPE_LIST = "types_list";
     
     private final static String UNIQUE_LIST = "unique_list";
     
+    private final static String HEADERS_LIST = "headers_list";
+    
     private final static String LIST_SEPARATOR = ";";
     
     private final List<CSVPropertyType> typesList;
+    
+    private final List<String> headersList;
     
     private final List<Integer> uniqueList;
     
     public CSVSchemaHandler(String className){
         typesList = new ArrayList<CSVPropertyType>();
         uniqueList = new ArrayList<Integer>();
+        headersList = new ArrayList<String>();
         Map<String,String> configMap = loadEntityProperties(className);
-        if(!configMap.keySet().contains(TYPE_LIST) || !configMap.keySet().contains(UNIQUE_LIST)){
-            throw new IllegalStateException("cannot find TYPE_LIST and UNIQUE_LIST in the properties file...");
+        if(!configMap.keySet().contains(TYPE_LIST) || !configMap.keySet().contains(UNIQUE_LIST) || !configMap.keySet().contains(HEADERS_LIST)){
+            throw new IllegalStateException("cannot find TYPE_LIST or HEADERS_LIST or UNIQUE_LIST in the properties file...");
         }
         String typeListString = configMap.get(TYPE_LIST);
         String uniqueListString = configMap.get(UNIQUE_LIST);
+        String headersListString = configMap.get(HEADERS_LIST);
         
         if(typeListString == null || typeListString.isEmpty()){
             throw new IllegalStateException("TYPE_LIST cannot be null or empty...");
@@ -82,6 +89,18 @@ public class CSVSchemaHandler {
                 throw new IllegalStateException("TYPE_LIST contains a not valid value: '" + type + "'");
             }
         }
+        
+        if(headersListString == null || headersListString.isEmpty()){
+            throw new IllegalStateException("HEADERS_LIST cannot be null or empty...");
+        }
+        String[] headersListArray = headersListString.split(LIST_SEPARATOR);
+        if(headersListArray.length != typesList.size()){
+            throw new IllegalStateException("HEADERS_LIST and TYPE_LIST have different size...");
+        }
+        for(String header : headersListArray){
+                headersList.add(header);
+        }
+        
         if(!StringUtils.trimAllWhitespace(uniqueListString).isEmpty()){
             String[] uniqueListArray = uniqueListString.split(LIST_SEPARATOR);
             for(String index : uniqueListArray){
@@ -128,10 +147,8 @@ public class CSVSchemaHandler {
             p.load(inStream);
             propertiesMap = new HashMap<String, String>((Map) p);
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             LOGGER.error(e.getMessage(), e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             LOGGER.error(e.getMessage(), e);
         }
         finally{

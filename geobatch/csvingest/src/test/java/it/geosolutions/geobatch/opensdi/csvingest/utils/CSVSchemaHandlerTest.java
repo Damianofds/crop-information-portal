@@ -74,7 +74,7 @@ public class CSVSchemaHandlerTest extends Assert{
             CSVSchemaHandler test = new CSVSchemaHandler("parsingfail-1");
         }
         catch(IllegalStateException e){
-            assertEquals("cannot find TYPE_LIST and UNIQUE_LIST in the properties file...", e.getMessage());
+            assertEquals("cannot find TYPE_LIST or HEADERS_LIST or UNIQUE_LIST in the properties file...", e.getMessage());
             return;
         }
         fail();
@@ -87,7 +87,7 @@ public class CSVSchemaHandlerTest extends Assert{
             CSVSchemaHandler test = new CSVSchemaHandler("parsingfail-2");
         }
         catch(IllegalStateException e){
-            assertEquals("cannot find TYPE_LIST and UNIQUE_LIST in the properties file...", e.getMessage());
+            assertEquals("cannot find TYPE_LIST or HEADERS_LIST or UNIQUE_LIST in the properties file...", e.getMessage());
             return;
         }
         fail();
@@ -114,6 +114,19 @@ public class CSVSchemaHandlerTest extends Assert{
         }
         catch(IllegalStateException e){
             assertEquals("UNIQUE_LIST contains a not valid Integer value: 's5'", e.getMessage());
+            return;
+        }
+        fail();
+    }
+    
+    //test the case with not valid values in typeList    
+    @Test
+    public void testPropertiesParsingFail5(){
+        try{
+            CSVSchemaHandler test = new CSVSchemaHandler("parsingfail-5");
+        }
+        catch(IllegalStateException e){
+            assertEquals("HEADERS_LIST and TYPE_LIST have different size...", e.getMessage());
             return;
         }
         fail();
