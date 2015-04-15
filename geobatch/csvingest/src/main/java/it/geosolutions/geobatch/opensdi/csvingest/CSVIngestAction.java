@@ -242,6 +242,13 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
 		this.unitOfMeasureService = unitOfMeasureService;
 	}
 
+    /**
+     * Check if null header fields are present
+     * 
+     * @param headers the CSV header array extracted from a CSV file
+     * @return the CSV headers as a List
+     * @throws ActionException id a null header is found
+     */
     private List<String> sanitizeHeaders(String[] headers) throws ActionException {
 
         List<String> ret = new ArrayList<String>();
