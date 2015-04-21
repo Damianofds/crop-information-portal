@@ -32,6 +32,7 @@ import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
 import it.geosolutions.opensdi.persistence.dao.CropStatusDAO;
+import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 import it.geosolutions.opensdi.service.UnitOfMeasureService;
 
 import java.io.File;
@@ -56,18 +57,6 @@ import au.com.bytecode.opencsv.CSVReader;
 public class CSVIngestAction extends BaseAction<EventObject> implements InitializingBean {
 
     protected final static Logger LOGGER = LoggerFactory.getLogger(CSVIngestAction.class);
-
-    @Autowired
-    private CropDescriptorDAO cropDescriptorDao;
-
-    @Autowired
-    private CropDataDAO cropDataDao;
-
-    @Autowired
-    private AgrometDAO agrometDao;
-
-    @Autowired
-    private CropStatusDAO cropStatusDao;
     
     @Autowired
     private UnitOfMeasureService unitOfMeasureService;
@@ -75,7 +64,7 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
     @Autowired
     private List<CSVProcessor> processors;
 	
-	
+    private static final Character DEFAULT_SEPARATOR = ',';
     
     private static final long AVG_ROW_BYTE_SIZE = 50;
 
@@ -90,14 +79,6 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
     }
 
     private void checkInit() {
-        if(cropDataDao == null)
-            throw new IllegalStateException("cropDataDao is null");
-        if(cropDescriptorDao == null)
-            throw new IllegalStateException("cropDescriptorDao is null");
-        if(agrometDao == null)
-            throw new IllegalStateException("agrometDao is null");
-        if(cropStatusDao == null)
-            throw new IllegalStateException("cropStatusDao is null");
         if(unitOfMeasureService == null)
             throw new IllegalStateException("unitOfMeasureService is null");
     }
@@ -107,7 +88,7 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
      */
     public Queue<EventObject> execute(Queue<EventObject> events) throws ActionException {
 
-        listenerForwarder.setTask("Check config");
+        listenerForwarder.setTask("Check flowConfig");
 
         // @autowired fields are injected *after* the checkConfiguration() is called
         checkInit();
@@ -124,7 +105,7 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
             if(event instanceof FileSystemEvent) {
                 FileSystemEvent fse = (FileSystemEvent) event;
                 File file = fse.getSource();
-                processCSVFile(file);
+                processCSVFile(file, configuration);
 //                    throw new ActionException(this, "Could not process " + event);
             } else {
                 throw new ActionException(this, "EventObject not handled " + event);
@@ -136,13 +117,15 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
 
 
     @Transactional(value = "opensdiTransactionManager")
-    private void processCSVFile(File file) throws ActionException {
+    private void processCSVFile(File file, CSVIngestConfiguration config) throws ActionException {
         LOGGER.info("Processing input file " + file);
 
         String[] headers = null;
         CSVReader reader = null;
         try {
-            reader = new CSVReader(new FileReader(file), ',');
+            Character separator = config.getCsvSeparator();
+            separator = (separator != null)?separator:DEFAULT_SEPARATOR; 
+            reader = new CSVReader(new FileReader(file), separator);
             headers = reader.readNext();
         } catch (IOException e) {
         	try{
@@ -159,6 +142,7 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
         for (CSVProcessor p : processors) {
             if(p.canProcess(headersList)) {
                 processor = p;
+                processor.setFlowConfig(config);
                 break;
             }
         }
@@ -205,35 +189,16 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
         }
         LOGGER.info("List of CSV processor found in the application Context:");
         for(CSVProcessor processor : processors){
-            LOGGER.info("--> Processor: '" + processor.getClass().toString() + "' DAO: '" + processor.getDAOClassName() + "'");
+            LOGGER.info("--> Processor: '" + processor.getClass().toString() + "'");
         }
     }
 
-    public void setCropDescriptorDao(CropDescriptorDAO cropDescriptorDAO) {
-        this.cropDescriptorDao = cropDescriptorDAO;
+    public void setUnitOfMeasureService(UnitOfMeasureService unitOfMeasureService) {
+        this.unitOfMeasureService = unitOfMeasureService;
     }
-
-    public void setCropDataDao(CropDataDAO cropDataDAO) {
-        this.cropDataDao = cropDataDAO;
-    }
-
-    public void setAgrometDao(AgrometDAO agrometDAO) {
-        this.agrometDao = agrometDAO;
-    }
-    
-    public CropStatusDAO getCropStatusDao() {
-		return cropStatusDao;
-	}
-
-	public void setCropStatusDao(CropStatusDAO cropStatusDao) {
-		this.cropStatusDao = cropStatusDao;
-	}
-	public void setUnitOfMeasureService(UnitOfMeasureService unitOfMeasureService){
-		this.unitOfMeasureService = unitOfMeasureService;
-	}
 
     /**
-     * Check if null header fields are present
+     * Check if null header fields are present and trim trailing and leading whitespaces
      * 
      * @param headers the CSV header array extracted from a CSV file
      * @return the CSV headers as a List
@@ -252,7 +217,7 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
                 if(emptyFound) {
                     throw new ActionException(this, "Header value found after blank header");
                 }
-                ret.add(h);
+                ret.add(h.trim());
             }
         }
 
