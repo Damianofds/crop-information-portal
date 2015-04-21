@@ -20,10 +20,16 @@
 package it.geosolutions.geobatch.opensdi.csvingest.processor;
 
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVPropertyType;
+import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVSchemaHandler;
 import it.geosolutions.opensdi.model.Fertilizer;
+import it.geosolutions.opensdi.persistence.dao.FertilizerDAO;
 import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author DamianoG
@@ -31,46 +37,72 @@ import java.util.List;
  */
 public class CSVFertilizerProcessor extends GenericCSVProcessor<Fertilizer, Long> {
 
-    @Override
-    public GenericNRLDAO<Fertilizer, Long> getDao() {
-        // TODO Auto-generated method stub
-        return null;
+    private final static Logger LOGGER = LoggerFactory.getLogger(CSVFertilizerProcessor.class);
+    
+    private CSVSchemaHandler schemaHandler;
+    
+    @Autowired
+    private FertilizerDAO dao;
+    
+    public CSVFertilizerProcessor(){
+        schemaHandler = new CSVSchemaHandler(Fertilizer.class.getSimpleName().toLowerCase());
     }
 
     @Override
     public List<String> getHeaders() {
-        // TODO Auto-generated method stub
-        return null;
+        return schemaHandler.getHeaderList();
     }
 
     @Override
     public List<CSVPropertyType> getTypes() {
-        // TODO Auto-generated method stub
-        return null;
+        return schemaHandler.getTypeList();
     }
 
     @Override
     public List<Integer> getPkProperties() {
-        // TODO Auto-generated method stub
-        return null;
+        return schemaHandler.getPrimaryKeysIndexes();
+    }
+
+    @Override
+    public GenericNRLDAO<Fertilizer, Long> getGenericDao() {
+        return dao;
     }
 
     @Override
     public Fertilizer merge(Fertilizer old, Object[] properties) {
-        // TODO Auto-generated method stub
-        return null;
+        Fertilizer fertilizer;
+        if (old != null) {
+            fertilizer = (Fertilizer) old;
+        } else {
+            fertilizer = new Fertilizer();
+        }
+        int idx = 1;
+        // pk
+        //distr;prov;year;mon;factor;value;(offtake tons)
+        fertilizer.setDistrict((String) properties[idx++]);
+        fertilizer.setProvince((String) properties[idx++]);
+        fertilizer.setYear((Integer) properties[idx++]);
+        fertilizer.setMonth((String) properties[idx++]);
+        fertilizer.setNutrient((String) properties[idx++]);
+        fertilizer.setOfftakeTons((Double) properties[idx++]);
+        return fertilizer;
     }
 
     @Override
     public void save(Fertilizer entity) {
-        
-        
+        dao.merge(entity);
     }
 
     @Override
     public void persist(Fertilizer entity) {
-        // TODO Auto-generated method stub
-        
+        dao.persist(entity);
     }
 
+    public FertilizerDAO getDao() {
+        return dao;
+    }
+
+    public void setDao(FertilizerDAO dao) {
+        this.dao = dao;
+    }
 }
