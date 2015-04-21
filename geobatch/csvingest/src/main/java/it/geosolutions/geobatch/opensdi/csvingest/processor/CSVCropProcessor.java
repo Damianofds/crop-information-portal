@@ -57,6 +57,9 @@ private final static List<String> HEADERS = Collections.unmodifiableList(Arrays
         .asList("*", "crop", "distr", "prov", "year", "years", "area", "prod",
                 "yield"));
 
+@Autowired
+private CropDataDAO dao;
+
 static List<CSVPropertyType> TYPES;
 static {
     TYPES = new LinkedList<CSVPropertyType>();
@@ -101,7 +104,7 @@ public List<String> getHeaders() {
 }
 
 @Override
-public GenericNRLDAO<CropData, Long> getDao() {
+public GenericNRLDAO<CropData, Long> getGenericDao() {
     return dao;
 }
 
@@ -175,8 +178,12 @@ protected CropDescriptor getCropDescriptor(String id){
     return cropDescriptorDAO.find(id);
 }
 
-public void setCropDataDAO(CropDataDAO cropDataDAO) {
-    this.dao = cropDataDAO;
+public CropDataDAO getDao() {
+    return dao;
+}
+
+public void setDao(CropDataDAO dao) {
+    this.dao = dao;
 }
 
 protected Map<String, CropDescriptor> getCropDescriptors() {

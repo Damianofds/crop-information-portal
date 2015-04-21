@@ -22,6 +22,7 @@ package it.geosolutions.geobatch.opensdi.csvingest.processor;
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVIngestUtils;
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVPropertyType;
 import it.geosolutions.opensdi.model.CropStatus;
+import it.geosolutions.opensdi.persistence.dao.CropStatusDAO;
 import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author adiaz
@@ -43,6 +45,9 @@ private final static Logger LOGGER = LoggerFactory
 
 private final static List<String> HEADERS = Collections.unmodifiableList(Arrays
         .asList("*", "factor", "crop", "month", "dec", "max", "min", "opt"));
+
+@Autowired
+private CropStatusDAO dao;
 
 @Override
 public List<String> getHeaders() {
@@ -86,7 +91,7 @@ public List<Integer> getPkProperties() {
 }
 
 @Override
-public GenericNRLDAO<CropStatus, Long> getDao() {
+public GenericNRLDAO<CropStatus, Long> getGenericDao() {
     return dao;
 }
 
@@ -133,5 +138,12 @@ public void persist(CropStatus entity) {
     dao.persist(entity);
 }
 
+public CropStatusDAO getDao() {
+    return dao;
+}
+
+public void setDao(CropStatusDAO dao) {
+    this.dao = dao;
+}
 
 }

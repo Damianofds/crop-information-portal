@@ -20,17 +20,10 @@
 package it.geosolutions.geobatch.opensdi.csvingest.processor;
 
 import it.geosolutions.geobatch.flow.event.ProgressListenerForwarder;
-import it.geosolutions.opensdi.model.CropDescriptor;
-import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
-import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
-import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
-import it.geosolutions.opensdi.persistence.dao.CropStatusDAO;
-import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
+import it.geosolutions.geobatch.opensdi.csvingest.CSVIngestConfiguration;
 import it.geosolutions.opensdi.service.UnitOfMeasureService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +38,10 @@ public abstract class CSVProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CSVProcessor.class);
 
-    protected GenericNRLDAO dao;
     protected UnitOfMeasureService unitOfMeasureService;
-
+    protected CSVIngestConfiguration flowConfig;
+    
+    
 	public abstract List<String> getHeaders();
 
     public boolean canProcess(List<String> ingestHeaders) {
@@ -78,18 +72,18 @@ public abstract class CSVProcessor {
     public abstract int getFailCount();
     public abstract int getRemoveCount();
     public abstract int getUpdateCount();
-    
-
-    public void setDao(GenericNRLDAO dao) {
-        this.dao = dao;
-    }
-    
-    public String getDAOClassName() {
-        return this.dao.getClass().getName();
-    }
 
     public void setUnitOfMeasureService(UnitOfMeasureService unitOfMeasureService) {
         this.unitOfMeasureService = unitOfMeasureService;
-
     }
+
+    public CSVIngestConfiguration getFlowConfig() {
+        return flowConfig;
+    }
+
+    public void setFlowConfig(CSVIngestConfiguration flowConfig) {
+        this.flowConfig = flowConfig;
+    }
+    
+    
 }

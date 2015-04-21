@@ -21,12 +21,16 @@ package it.geosolutions.geobatch.opensdi.csvingest.processor;
 
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVPropertyType;
 import it.geosolutions.opensdi.model.AgroMet;
+import it.geosolutions.opensdi.model.Fertilizer;
+import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author ETj (etj at geo-solutions.it)
@@ -39,6 +43,9 @@ public class CSVAgrometProcessor extends GenericCSVProcessor<AgroMet, Long> {
 
 private final static List<String> HEADERS = Collections.unmodifiableList(Arrays
         .asList("*", "distr", "prov", "year", "mon", "dec", "factor", "*"));
+
+@Autowired
+private AgrometDAO dao;
 
 static List<CSVPropertyType> TYPES;
 static {
@@ -84,7 +91,7 @@ public List<String> getHeaders() {
 }
 
 @Override
-public GenericNRLDAO<AgroMet, Long> getDao() {
+public GenericNRLDAO<AgroMet, Long> getGenericDao() {
     return dao;
 }
 
@@ -189,6 +196,15 @@ public void save(AgroMet entity) {
 public void persist(AgroMet entity) {
     dao.persist(entity);
 }
+
+public AgrometDAO getDao() {
+    return dao;
+}
+
+public void setDao(AgrometDAO dao) {
+    this.dao = dao;
+}
+
 
 
 }
