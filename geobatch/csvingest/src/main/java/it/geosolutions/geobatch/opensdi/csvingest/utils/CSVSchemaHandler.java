@@ -122,6 +122,10 @@ public class CSVSchemaHandler {
         return ListUtils.unmodifiableList(uniqueList);
     }
     
+    public List<String> getHeaderList(){
+        return ListUtils.unmodifiableList(headersList);
+    }
+    
     /**
      * Search and load for a properties file called as the entity. 
      *  
@@ -172,7 +176,7 @@ public class CSVSchemaHandler {
      *    <li>If the file is not found in the classpath root, search it in the <b>current package</b>. A file must be found since here are the default properties files for this class</li>
      * </ul>
      * 
-     * TODO: Instead of search in the classpath root the method should be able to search the file in the Geobatch config directory. Unfortunately the interfaces of CSVGenericProcess doesn't allow to pass the path of that directory. (inject it with spring?) 
+     * TODO: Instead of search in the classpath root the method should be able to search the file in the Geobatch flowConfig directory. Unfortunately the interfaces of CSVGenericProcess doesn't allow to pass the path of that directory. (inject it with spring?) 
      * 
      */
     public static URL searchpropertiesFile(String entityName){
