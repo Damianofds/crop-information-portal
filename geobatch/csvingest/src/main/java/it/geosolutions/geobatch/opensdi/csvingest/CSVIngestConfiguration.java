@@ -21,21 +21,39 @@
  */
 package it.geosolutions.geobatch.opensdi.csvingest;
 
-
 import it.geosolutions.geobatch.configuration.event.action.ActionConfiguration;
 
 /**
  */
-public class CSVIngestConfiguration extends ActionConfiguration {	
-	
-	public CSVIngestConfiguration(String id, String name, String description) {
-		super(id, name, description);
-	}
-	
+public class CSVIngestConfiguration extends ActionConfiguration {
+
+    private Character csvSeparator;
+    private Boolean emptyFieldsAsZero;
+
+    public Character getCsvSeparator() {
+        return csvSeparator;
+    }
+
+    public void setCsvSeparator(Character csvSeparator) {
+        this.csvSeparator = csvSeparator;
+    }
+
+    public Boolean getEmptyFieldsAsZero() {
+        return emptyFieldsAsZero;
+    }
+
+    public void setEmptyFieldsAsZero(Boolean emptyFieldsAsZero) {
+        this.emptyFieldsAsZero = emptyFieldsAsZero;
+    }
+
+    public CSVIngestConfiguration(String id, String name, String description) {
+        super(id, name, description);
+    }
 
     @Override
     public CSVIngestConfiguration clone() {
         final CSVIngestConfiguration configuration = (CSVIngestConfiguration) super.clone();
         return configuration;
     }
+
 }
