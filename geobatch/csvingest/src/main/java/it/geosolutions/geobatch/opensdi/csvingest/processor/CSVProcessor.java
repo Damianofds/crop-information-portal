@@ -24,6 +24,7 @@ import it.geosolutions.geobatch.opensdi.csvingest.CSVIngestConfiguration;
 import it.geosolutions.opensdi.service.UnitOfMeasureService;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public abstract class CSVProcessor {
 
     protected UnitOfMeasureService unitOfMeasureService;
     protected CSVIngestConfiguration flowConfig;
-    
+    protected Map<String, String> flowExecutionParametersMap;
     
 	public abstract List<String> getHeaders();
 
@@ -83,6 +84,10 @@ public abstract class CSVProcessor {
 
     public void setFlowConfig(CSVIngestConfiguration flowConfig) {
         this.flowConfig = flowConfig;
+    }
+
+    public void setFlowExecutionParametersMap(Map<String, String> flowExecutionParametersMap) {
+        this.flowExecutionParametersMap = flowExecutionParametersMap;
     }
     
     

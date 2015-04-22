@@ -84,6 +84,8 @@ public class CSVDistrictsFertilizerProcessor extends GenericCSVProcessor<Fertili
         fertilizer.setYear((Integer) properties[idx++]);
         fertilizer.setMonth((String) properties[idx++]);
         fertilizer.setNutrient((String) properties[idx++]);
+        
+        //compute the values in 
         fertilizer.setOfftakeTons((Double) properties[idx++]);
         return fertilizer;
     }

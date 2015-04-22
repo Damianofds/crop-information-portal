@@ -28,6 +28,7 @@ import it.geosolutions.geobatch.flow.event.action.ActionException;
 import it.geosolutions.geobatch.flow.event.action.BaseAction;
 import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProcessException;
 import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProcessor;
+import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVSchemaHandler;
 import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
 import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
@@ -40,8 +41,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import org.slf4j.Logger;
@@ -49,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -65,8 +69,8 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
     private List<CSVProcessor> processors;
 	
     private static final Character DEFAULT_SEPARATOR = ',';
-    
     private static final long AVG_ROW_BYTE_SIZE = 50;
+    private static final String CSV_LOCATION_KEY = "CSVlocation";
 
     public CSVIngestAction(final CSVIngestConfiguration configuration) throws IOException {
         super(configuration);
@@ -105,7 +109,9 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
             if(event instanceof FileSystemEvent) {
                 FileSystemEvent fse = (FileSystemEvent) event;
                 File file = fse.getSource();
-                processCSVFile(file, configuration);
+                Map flowParamsMap = new HashMap<String, String>();
+                file = processInputFile(file, flowParamsMap);
+                processCSVFile(file, configuration, flowParamsMap);
 //                    throw new ActionException(this, "Could not process " + event);
             } else {
                 throw new ActionException(this, "EventObject not handled " + event);
@@ -117,7 +123,7 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
 
 
     @Transactional(value = "opensdiTransactionManager")
-    private void processCSVFile(File file, CSVIngestConfiguration config) throws ActionException {
+    private void processCSVFile(File file, CSVIngestConfiguration config, Map flowParamsMap) throws ActionException {
         LOGGER.info("Processing input file " + file);
 
         String[] headers = null;
@@ -143,6 +149,7 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
             if(p.canProcess(headersList)) {
                 processor = p;
                 processor.setFlowConfig(config);
+                processor.setFlowExecutionParametersMap(flowParamsMap);
                 break;
             }
         }
@@ -222,6 +229,45 @@ public class CSVIngestAction extends BaseAction<EventObject> implements Initiali
         }
 
         return ret;
+    }
+    
+    /**
+     * Process the input file: 
+     * If the file is a CSV returns that File instance; 
+     * If the file is a properties file this method extracts from the property CSVlocation the path of the file and returns the file instances, the others properties are saved in the input Map
+     * The only property needed is the CSV file path (key = CSVlocation) the validation of all the other properties is delegated to the specific CSV processor.
+     *  
+     * @param propertiesFile a properties file where the informations needed for the CSV processing are stored
+     * @param flowParameters an empty Map that will be filled with the properties found in the propertiesFile
+     * @return a file to be used as input
+     */
+     private File processInputFile(File propertiesFile, Map<String, String> flowParameters) throws ActionException{
+        
+        if(propertiesFile == null || flowParameters == null){
+            throw new ActionException(this, "Invalid input parameters for the method processInputFile, one or both of the two parameters are null...");
+        }
+        String[] fileParts = propertiesFile.getName().split("\\.");
+        String ext = fileParts[fileParts.length-1];
+        if("csv".equalsIgnoreCase(ext)){
+            return propertiesFile;
+        }
+        else if("properties".equalsIgnoreCase(ext)){
+            Map<String,String> map = CSVSchemaHandler.loadProperties(propertiesFile);
+            String s = map.get(CSV_LOCATION_KEY);
+            if(s == null || s.isEmpty() || StringUtils.containsWhitespace(s)){
+                throw new ActionException(this, "Invalid input parameters for the method processInputFile, one or both of the two parameters are null...");
+            }
+            File f = new File(s);
+            if(f == null || !f.exists() || !f.isFile() || !f.canRead()){
+                throw new ActionException(this, "Invalid input file for the flow... file path is: '" + s + "'");
+            }
+            Map tmp = new HashMap(map);
+            tmp.keySet().removeAll(flowParameters.keySet());
+            tmp.keySet().remove(CSV_LOCATION_KEY);
+            flowParameters.putAll(tmp);
+            return f;
+        }
+        throw new ActionException(this, "the provided input file is nor a properties nor a csv file... the extension found is '" + ext + "'");
     }
 
 }

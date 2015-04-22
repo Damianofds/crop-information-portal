@@ -142,31 +142,9 @@ public class CSVSchemaHandler {
         } catch (URISyntaxException e1) {
             throw new IllegalArgumentException("Unable to find property file for this CSV Processor...");
         }
-        
-        InputStream inStream = null;
-        Map<String, String> propertiesMap = null;
-        try {
-            inStream = new FileInputStream(propFile);
-            Properties p = new Properties();
-            p.load(inStream);
-            propertiesMap = new HashMap<String, String>((Map) p);
-        } catch (FileNotFoundException e) {
-            LOGGER.error(e.getMessage(), e);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        finally{
-            if(inStream != null){
-                try {
-                    inStream.close();
-                } catch (IOException e) {
-                    inStream = null;
-                    LOGGER.error(e.getMessage(), e);
-                }
-            }
-        }
-        return  propertiesMap;
+        return loadProperties(propFile);
     }
+    
     
     /**
      * This method search for the properties file where the informations about the keyList and uniqueList are stored.
@@ -190,5 +168,38 @@ public class CSVSchemaHandler {
             throw new IllegalStateException("the properties file cannot be found in the package... this should never happen...");
         }
         return url;
+    }
+    
+    /**
+     * Load a properties File and save the values in a Map
+     * @param fileURL
+     * @return
+     */
+    public static Map<String, String> loadProperties(File properties){
+        
+        
+        InputStream inStream = null;
+        Map<String, String> propertiesMap = null;
+        try {
+            inStream = new FileInputStream(properties);
+            Properties p = new Properties();
+            p.load(inStream);
+            propertiesMap = new HashMap<String, String>((Map) p);
+        } catch (FileNotFoundException e) {
+            LOGGER.error(e.getMessage(), e);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        finally{
+            if(inStream != null){
+                try {
+                    inStream.close();
+                } catch (IOException e) {
+                    inStream = null;
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
+        }
+        return  propertiesMap;
     }
 }
