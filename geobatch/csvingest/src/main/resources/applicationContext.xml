@@ -8,7 +8,8 @@
 		<ref bean="agrometProcessor" />
 		<ref bean="cropProcessor" />
 		<ref bean="cropStatusProcessor" />
-		<ref bean="fertilizerProcessor" />
+		<ref bean="fertilizerDistrictsProcessor" />
+		<ref bean="fertilizerProvincesProcessor" />
 	</util:list>
 
 	<bean id="agrometProcessor"
@@ -23,8 +24,12 @@
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVCropStatusProcessor">
 		<property name="dao" ref="cropStatusDao" />
     </bean>
-	<bean id="fertilizerProcessor"
-		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVFertilizerProcessor">
+	<bean id="fertilizerDistrictsProcessor"
+		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVDistrictsFertilizerProcessor">
+		<property name="dao" ref="fertilizerDao" />
+	</bean>
+	<bean id="fertilizerProvincesProcessor"
+		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProvincesFertilizerProcessor">
 		<property name="dao" ref="fertilizerDao" />
 	</bean>
 	

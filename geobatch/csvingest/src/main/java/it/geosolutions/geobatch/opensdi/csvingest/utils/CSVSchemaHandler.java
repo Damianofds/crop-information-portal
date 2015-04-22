@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  * @author DamianoG
  *
  * This class holds mapping information between input CSV file and the data entity used in the crop information portal.
- * It loads the information from a properties file called as the entity (lowercase).
+ * It loads the information from a properties file.
  * 
  * The Properties file is loaded in memory in the class constructor execution, it must take into account in order to
  * avoid unwanted caching side-effects of the values.
@@ -65,11 +65,11 @@ public class CSVSchemaHandler {
     
     private final List<Integer> uniqueList;
     
-    public CSVSchemaHandler(String className){
+    public CSVSchemaHandler(String propertiesFileName){
         typesList = new ArrayList<CSVPropertyType>();
         uniqueList = new ArrayList<Integer>();
         headersList = new ArrayList<String>();
-        Map<String,String> configMap = loadEntityProperties(className);
+        Map<String,String> configMap = loadEntityProperties(propertiesFileName);
         if(!configMap.keySet().contains(TYPE_LIST) || !configMap.keySet().contains(UNIQUE_LIST) || !configMap.keySet().contains(HEADERS_LIST)){
             throw new IllegalStateException("cannot find TYPE_LIST or HEADERS_LIST or UNIQUE_LIST in the properties file...");
         }
@@ -180,9 +180,11 @@ public class CSVSchemaHandler {
      * 
      */
     public static URL searchpropertiesFile(String entityName){
-        URL url = CSVSchemaHandler.class.getResource("/"+entityName.toLowerCase()+".properties");
+        String fileName = entityName+".properties";
+        LOGGER.info("trying to load the properties file '" + fileName + "'");
+        URL url = CSVSchemaHandler.class.getResource("/"+fileName);
         if(url == null){
-            url = CSVSchemaHandler.class.getResource(entityName.toLowerCase()+".properties");
+            url = CSVSchemaHandler.class.getResource(fileName);
         }
         if(url == null){
             throw new IllegalStateException("the properties file cannot be found in the package... this should never happen...");

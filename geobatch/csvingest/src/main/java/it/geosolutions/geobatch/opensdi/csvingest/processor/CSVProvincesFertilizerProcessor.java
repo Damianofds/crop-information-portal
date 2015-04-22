@@ -35,17 +35,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author DamianoG
  *
  */
-public class CSVFertilizerProcessor extends GenericCSVProcessor<Fertilizer, Long> {
+public class CSVProvincesFertilizerProcessor extends GenericCSVProcessor<Fertilizer, Long> {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(CSVFertilizerProcessor.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(CSVProvincesFertilizerProcessor.class);
     
     private CSVSchemaHandler schemaHandler;
     
     @Autowired
     private FertilizerDAO dao;
     
-    public CSVFertilizerProcessor(){
-        schemaHandler = new CSVSchemaHandler(Fertilizer.class.getSimpleName().toLowerCase());
+    public CSVProvincesFertilizerProcessor(){
+        schemaHandler = new CSVSchemaHandler("fertilizerProvinces");
     }
 
     @Override
@@ -78,8 +78,8 @@ public class CSVFertilizerProcessor extends GenericCSVProcessor<Fertilizer, Long
         }
         int idx = 1;
         // pk
-        //distr;prov;year;mon;factor;value;(offtake tons)
-        fertilizer.setDistrict((String) properties[idx++]);
+        //prov;year;mon;factor;value;(offtake tons)
+        fertilizer.setDistrict(null);
         fertilizer.setProvince((String) properties[idx++]);
         fertilizer.setYear((Integer) properties[idx++]);
         fertilizer.setMonth((String) properties[idx++]);
