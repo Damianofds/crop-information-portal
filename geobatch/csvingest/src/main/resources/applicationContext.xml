@@ -10,6 +10,9 @@
 		<ref bean="cropStatusProcessor" />
 		<ref bean="fertilizerDistrictsProcessor" />
 		<ref bean="fertilizerProvincesProcessor" />
+		<ref bean="irrigationProcessor" />
+		<ref bean="marketPriceProcessor100" />
+		<ref bean="marketPriceProcessor40" />
 	</util:list>
 
 	<bean id="agrometProcessor"
@@ -31,6 +34,21 @@
 	<bean id="fertilizerProvincesProcessor"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProvincesFertilizerProcessor">
 		<property name="dao" ref="fertilizerDao" />
+	</bean>
+	
+	<bean id="marketPriceProcessor100"
+		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVMarketPricesProcessor100">
+		<property name="dao" ref="marketPriceDao" />
+	</bean>
+	
+	<bean id="marketPriceProcessor40"
+		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVMarketPricesProcessor40">
+		<property name="dao" ref="marketPriceDao" />
+	</bean>
+	
+	<bean id="irrigationProcessor"
+		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVIrrigationProcessor">
+		<property name="dao" ref="irrigationDao" />
 	</bean>
 	
 </beans>
