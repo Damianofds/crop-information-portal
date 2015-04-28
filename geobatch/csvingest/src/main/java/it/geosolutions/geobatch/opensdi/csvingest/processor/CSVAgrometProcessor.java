@@ -21,7 +21,6 @@ package it.geosolutions.geobatch.opensdi.csvingest.processor;
 
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVPropertyType;
 import it.geosolutions.opensdi.model.AgroMet;
-import it.geosolutions.opensdi.model.Fertilizer;
 import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
 import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 

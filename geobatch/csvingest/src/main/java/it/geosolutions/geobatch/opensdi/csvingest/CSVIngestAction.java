@@ -29,11 +29,6 @@ import it.geosolutions.geobatch.flow.event.action.BaseAction;
 import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProcessException;
 import it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProcessor;
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVSchemaHandler;
-import it.geosolutions.opensdi.persistence.dao.AgrometDAO;
-import it.geosolutions.opensdi.persistence.dao.CropDataDAO;
-import it.geosolutions.opensdi.persistence.dao.CropDescriptorDAO;
-import it.geosolutions.opensdi.persistence.dao.CropStatusDAO;
-import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 import it.geosolutions.opensdi.service.UnitOfMeasureService;
 
 import java.io.File;
