@@ -48,11 +48,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class CSVCropProcessor extends GenericCSVProcessor<CropData, Long> {
 
+    @Autowired
     private CropDescriptorDAO cropDescriptorDAO;
     
 	private final static Logger LOGGER = LoggerFactory
 	        .getLogger(CSVCropProcessor.class);
-
+	
+	protected final static String SRC = "src";
+	
 private final static List<String> HEADERS = Collections.unmodifiableList(Arrays
         .asList("*", "crop", "distr", "prov", "year", "years", "area", "prod",
                 "yield"));
@@ -105,6 +108,8 @@ public List<String> getHeaders() {
 
 @Override
 public GenericNRLDAO<CropData, Long> getGenericDao() {
+    String src = flowExecutionParametersMap.get(SRC);
+    dao.setSrc(src);
     return dao;
 }
 
@@ -133,6 +138,7 @@ public CropData merge(CropData old, Object[] properties) {
     cropData.setArea((Double) properties[idx++]);
     cropData.setProduction((Double) properties[idx++]);
     cropData.setYield((Double) properties[idx++]);
+    cropData.setSrc(flowExecutionParametersMap.get(SRC));
     return cropData;
 }
 

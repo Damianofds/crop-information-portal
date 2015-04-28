@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -39,6 +40,7 @@ public abstract class CSVProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CSVProcessor.class);
 
+    @Autowired
     protected UnitOfMeasureService unitOfMeasureService;
     protected CSVIngestConfiguration flowConfig;
     protected Map<String, String> flowExecutionParametersMap;

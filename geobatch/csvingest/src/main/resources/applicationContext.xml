@@ -15,40 +15,45 @@
 		<ref bean="marketPriceProcessor40" />
 	</util:list>
 
+	<!-- cropDescriptorService
+	agrometDescriptorService
+	unitOfMeasureService -->
+
+
 	<bean id="agrometProcessor"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVAgrometProcessor">
-		<property name="dao" ref="agrometDao" />
+		<!-- <property name="dao" ref="agrometDao" /> -->
 	</bean>
 	<bean id="cropProcessor"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVCropProcessor">
-		<property name="dao" ref="cropDataDao" />
+		<!-- <property name="dao" ref="cropDataDao" /> -->
 	</bean>
 	<bean id="cropStatusProcessor"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVCropStatusProcessor">
-		<property name="dao" ref="cropStatusDao" />
+		<!-- <property name="dao" ref="cropStatusDao" /> -->
     </bean>
 	<bean id="fertilizerDistrictsProcessor"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVDistrictsFertilizerProcessor">
-		<property name="dao" ref="fertilizerDao" />
+		<!-- <property name="dao" ref="fertilizerDao" /> -->
 	</bean>
 	<bean id="fertilizerProvincesProcessor"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVProvincesFertilizerProcessor">
-		<property name="dao" ref="fertilizerDao" />
+		<!-- <property name="dao" ref="fertilizerDao" /> -->
 	</bean>
 	
 	<bean id="marketPriceProcessor100"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVMarketPricesProcessor100">
-		<property name="dao" ref="marketPriceDao" />
+		<!-- <property name="dao" ref="marketPriceDao" /> -->
 	</bean>
 	
 	<bean id="marketPriceProcessor40"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVMarketPricesProcessor40">
-		<property name="dao" ref="marketPriceDao" />
+		<!-- <property name="dao" ref="marketPriceDao" /> -->
 	</bean>
 	
 	<bean id="irrigationProcessor"
 		class="it.geosolutions.geobatch.opensdi.csvingest.processor.CSVIrrigationProcessor">
-		<property name="dao" ref="irrigationDao" />
+		<!-- <property name="dao" ref="irrigationDao" /> -->
 	</bean>
 	
 </beans>
