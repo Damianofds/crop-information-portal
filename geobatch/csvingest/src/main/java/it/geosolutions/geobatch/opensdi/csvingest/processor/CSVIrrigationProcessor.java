@@ -40,8 +40,6 @@ public class CSVIrrigationProcessor extends GenericCSVProcessor<Irrigation, Long
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CSVIrrigationProcessor.class);
 
-    private CSVSchemaHandler schemaHandler;
-
     @Autowired
     private IrrigationDAO dao;
 

@@ -22,6 +22,7 @@ package it.geosolutions.geobatch.opensdi.csvingest.processor;
 import it.geosolutions.geobatch.flow.event.ProgressListenerForwarder;
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVIngestUtils;
 import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVPropertyType;
+import it.geosolutions.geobatch.opensdi.csvingest.utils.CSVSchemaHandler;
 import it.geosolutions.opensdi.persistence.dao.GenericNRLDAO;
 
 import java.io.IOException;
@@ -55,8 +56,10 @@ public abstract class GenericCSVProcessor<T, ID extends Serializable> extends CS
     /**
      * Flag indicates don't fail if one row fail
      */
-    protected boolean rowByRow = false;
+    protected boolean rowByRow;
 
+    protected CSVSchemaHandler schemaHandler;
+    
     /**
      * @return the dao
      */
@@ -108,6 +111,19 @@ public abstract class GenericCSVProcessor<T, ID extends Serializable> extends CS
     @Override
     public void process(CSVReader reader, ProgressListenerForwarder progress, long rowEstimation)
             throws CSVProcessException {
+        
+        // Configurations setup and initialization
+        //Reload the schemaHandler in order to allow runtime changes on the properties file
+        if(schemaHandler != null){
+            schemaHandler.reload();
+        }
+        //Load config from the flow configuration file
+        Boolean emptyFieldsAsZero = (flowConfig != null) ? flowConfig.getEmptyFieldsAsZero(): false;
+        emptyFieldsAsZero = (emptyFieldsAsZero != null) ? emptyFieldsAsZero : false;
+        Boolean configRowByRow = (flowConfig != null) ? flowConfig.getRowByRow(): false;
+        rowByRow = (configRowByRow != null) ? configRowByRow : false; 
+        
+        
         String nextLine[];
         long ok = 0;
         float TOLERANCE = 1;
@@ -117,9 +133,6 @@ public abstract class GenericCSVProcessor<T, ID extends Serializable> extends CS
             updateCount = 0;
             removeCount = 0;
             failCount = 0;
-            Boolean emptyFieldsAsZero = (flowConfig != null) ? flowConfig.getEmptyFieldsAsZero()
-                    : false;
-            emptyFieldsAsZero = (emptyFieldsAsZero != null) ? emptyFieldsAsZero : false;
             while ((nextLine = reader.readNext()) != null) {
                 // progress estimation
                 if (progress != null) {

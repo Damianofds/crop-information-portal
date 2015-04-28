@@ -43,8 +43,6 @@ public class CSVMarketPricesProcessor100 extends GenericCSVProcessor<MarketPrice
     protected final static String DENOMINATOR = "denominator";
     protected final static String EXCHANGE_RATE = "exchangeRate";
 
-    protected CSVSchemaHandler schemaHandler;
-
     @Autowired
     private MarketPriceDAO dao;
 

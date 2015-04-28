@@ -59,59 +59,20 @@ public class CSVSchemaHandler {
     
     private final static String LIST_SEPARATOR = ";";
     
-    private final List<CSVPropertyType> typesList;
+    private List<CSVPropertyType> typesList;
     
-    private final List<String> headersList;
+    private List<String> headersList;
     
-    private final List<Integer> uniqueList;
+    private List<Integer> uniqueList;
+    
+    private final String propertiesFileName;
     
     public CSVSchemaHandler(String propertiesFileName){
         typesList = new ArrayList<CSVPropertyType>();
         uniqueList = new ArrayList<Integer>();
         headersList = new ArrayList<String>();
-        Map<String,String> configMap = loadEntityProperties(propertiesFileName);
-        if(!configMap.keySet().contains(TYPE_LIST) || !configMap.keySet().contains(UNIQUE_LIST) || !configMap.keySet().contains(HEADERS_LIST)){
-            throw new IllegalStateException("cannot find TYPE_LIST or HEADERS_LIST or UNIQUE_LIST in the properties file...");
-        }
-        String typeListString = configMap.get(TYPE_LIST);
-        String uniqueListString = configMap.get(UNIQUE_LIST);
-        String headersListString = configMap.get(HEADERS_LIST);
-        
-        if(typeListString == null || typeListString.isEmpty()){
-            throw new IllegalStateException("TYPE_LIST cannot be null or empty...");
-        }
-        String[] typeListArray = typeListString.split(LIST_SEPARATOR);
-        for(String type : typeListArray){
-            try{
-                typesList.add(CSVPropertyType.valueOf(type));
-            }
-            catch(Exception e){
-                throw new IllegalStateException("TYPE_LIST contains a not valid value: '" + type + "'");
-            }
-        }
-        
-        if(headersListString == null || headersListString.isEmpty()){
-            throw new IllegalStateException("HEADERS_LIST cannot be null or empty...");
-        }
-        String[] headersListArray = headersListString.split(LIST_SEPARATOR);
-        if(headersListArray.length != typesList.size()){
-            throw new IllegalStateException("HEADERS_LIST and TYPE_LIST have different size...");
-        }
-        for(String header : headersListArray){
-                headersList.add(header);
-        }
-        
-        if(!StringUtils.trimAllWhitespace(uniqueListString).isEmpty()){
-            String[] uniqueListArray = uniqueListString.split(LIST_SEPARATOR);
-            for(String index : uniqueListArray){
-                try{
-                    uniqueList.add(Integer.parseInt(index));
-                }
-                catch(Exception e){
-                    throw new IllegalStateException("UNIQUE_LIST contains a not valid Integer value: '" + index + "'");
-                }
-            }
-        }
+        this.propertiesFileName = propertiesFileName;
+        reload();
     }
     
     public List<CSVPropertyType> getTypeList(){
@@ -201,5 +162,54 @@ public class CSVSchemaHandler {
             }
         }
         return  propertiesMap;
+    }
+    
+    public void reload(){
+        typesList = new ArrayList<CSVPropertyType>();
+        uniqueList = new ArrayList<Integer>();
+        headersList = new ArrayList<String>();
+        Map<String,String> configMap = loadEntityProperties(propertiesFileName);
+        if(!configMap.keySet().contains(TYPE_LIST) || !configMap.keySet().contains(UNIQUE_LIST) || !configMap.keySet().contains(HEADERS_LIST)){
+            throw new IllegalStateException("cannot find TYPE_LIST or HEADERS_LIST or UNIQUE_LIST in the properties file...");
+        }
+        String typeListString = configMap.get(TYPE_LIST);
+        String uniqueListString = configMap.get(UNIQUE_LIST);
+        String headersListString = configMap.get(HEADERS_LIST);
+        
+        if(typeListString == null || typeListString.isEmpty()){
+            throw new IllegalStateException("TYPE_LIST cannot be null or empty...");
+        }
+        String[] typeListArray = typeListString.split(LIST_SEPARATOR);
+        for(String type : typeListArray){
+            try{
+                typesList.add(CSVPropertyType.valueOf(type));
+            }
+            catch(Exception e){
+                throw new IllegalStateException("TYPE_LIST contains a not valid value: '" + type + "'");
+            }
+        }
+        
+        if(headersListString == null || headersListString.isEmpty()){
+            throw new IllegalStateException("HEADERS_LIST cannot be null or empty...");
+        }
+        String[] headersListArray = headersListString.split(LIST_SEPARATOR);
+        if(headersListArray.length != typesList.size()){
+            throw new IllegalStateException("HEADERS_LIST and TYPE_LIST have different size...");
+        }
+        for(String header : headersListArray){
+                headersList.add(header);
+        }
+        
+        if(!StringUtils.trimAllWhitespace(uniqueListString).isEmpty()){
+            String[] uniqueListArray = uniqueListString.split(LIST_SEPARATOR);
+            for(String index : uniqueListArray){
+                try{
+                    uniqueList.add(Integer.parseInt(index));
+                }
+                catch(Exception e){
+                    throw new IllegalStateException("UNIQUE_LIST contains a not valid Integer value: '" + index + "'");
+                }
+            }
+        }
     }
 }

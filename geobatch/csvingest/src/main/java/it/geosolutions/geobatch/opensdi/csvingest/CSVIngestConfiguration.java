@@ -29,6 +29,7 @@ public class CSVIngestConfiguration extends ActionConfiguration {
 
     private Character csvSeparator;
     private Boolean emptyFieldsAsZero;
+    private Boolean rowByRow;
 
     public Character getCsvSeparator() {
         return csvSeparator;
@@ -48,6 +49,14 @@ public class CSVIngestConfiguration extends ActionConfiguration {
 
     public CSVIngestConfiguration(String id, String name, String description) {
         super(id, name, description);
+    }
+    
+    public Boolean getRowByRow() {
+        return rowByRow;
+    }
+
+    public void setRowByRow(Boolean rowByRow) {
+        this.rowByRow = rowByRow;
     }
 
     @Override

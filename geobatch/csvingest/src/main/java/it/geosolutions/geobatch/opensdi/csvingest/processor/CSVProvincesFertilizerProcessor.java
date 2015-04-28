@@ -39,8 +39,6 @@ public class CSVProvincesFertilizerProcessor extends GenericCSVProcessor<Fertili
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CSVProvincesFertilizerProcessor.class);
     
-    private CSVSchemaHandler schemaHandler;
-    
     @Autowired
     private FertilizerDAO dao;
     
